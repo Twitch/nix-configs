@@ -1,0 +1,15 @@
+#####################################################################
+# Ensure required packages exist (tmux, screen, vim)
+#####################################################################
+- name: Ensure tmux, screen, vim are installed
+  hosts: localhost
+  connection: local
+  become: true
+  tasks:
+    ansible.builtin.package:
+      name:
+        - git
+        - tmux
+        # - screen
+        - vim
+      state: present
