@@ -42,6 +42,13 @@
         scope: global
       become: false
 
+    - name: Set Git to use the ssh-agent for push/ssh stuffs
+      community.general.git_config:
+        name: core.sshCommand
+        value: "ssh -o IdentityAgent=$SSH_AUTH_SOCK"
+        scope: global
+      become: false
+
 
     #####################################################################
     # Clone/update dotfiles from GitHub
