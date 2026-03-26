@@ -29,8 +29,6 @@
     #####################################################################
     # Set global git configs
     #####################################################################
-    - hosts: localhost
-      connection: local
       tasks:
         - name: Ensure community.general collection is installed
           ansible.builtin.command:
