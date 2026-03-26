@@ -40,7 +40,7 @@
         name: user.name
         value: "{{ git_user_name }}"
         scope: global
-      become: fals
+      become: false
     - name: Set Git global user.email
       community.general.git_config:
         name: user.email
