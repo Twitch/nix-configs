@@ -8,7 +8,7 @@ cd "$(dirname "$0")"
 ansible-galaxy collection install -r collections/requirements.yml
 
 # 2) Run root-only tasks (will prompt for sudo once)
-ansible-playbook playbooks/01-packages-root.yml --ask-become-pass
+ansible-playbook playbooks/01-package-install-sudo.yml --ask-become-pass
 
 # 3) Run user-level tasks
-ansible-playbook playbooks/02-dotfiles-user.yml
+ansible-playbook playbooks/02-config-env.yml
