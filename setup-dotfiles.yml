@@ -1,0 +1,183 @@
+---
+- name: Set up shell and editor customizations because bish, I be picky
+  hosts: localhost
+  connection: local
+  vars:
+    dotfiles_repo: "git@github.com:Twitch/nix-configs.git"
+    dotfiles_version: "main"
+    dotfiles_dir: "{{ ansible_env.HOME }}/.bsconfig/.dotfiles"
+    user_home: "{{ ansible_env.HOME }}"
+    user_name: "{{ ansible_user_id | default(ansible_env.USER) }}"
+
+  tasks:
+    #####################################################################
+    # 0. Ensure required packages exist (tmux, screen, vim)
+    #####################################################################
+    - name: Ensure tmux, screen, vim are installed
+      become: true
+      ansible.builtin.package:
+        name:
+          - tmux
+          - screen
+          - vim
+          - git
+        state: present
+
+    #####################################################################
+    # 1. Clone/update dotfiles from GitHub
+    #####################################################################
+    - name: Clone dotfiles repo
+      ansible.builtin.git:
+        repo: "{{ dotfiles_repo }}"
+        dest: "{{ dotfiles_dir }}"
+        version: "{{ dotfiles_version }}"
+        update: yes
+
+    #####################################################################
+    # 2. dircolors customization (~/.dircolors)
+    #####################################################################
+    - name: Deploy custom dircolors
+      ansible.builtin.file:
+        src: "{{ dotfiles_dir }}/bash/dircolors"
+        dest: "{{ user_home }}/.dircolors"
+        state: link
+        force: yes
+
+    #####################################################################
+    # 3. Prompt customization (separate file, sourced from .bashrc)
+    #####################################################################
+    - name: Deploy custom prompt script
+      ansible.builtin.file:
+        src: "{{ dotfiles_dir }}/bash/prompt.sh"
+        dest: "{{ user_home }}/.bash_prompt"
+        state: link
+        force: yes
+
+    - name: Ensure .bashrc sources .bash_prompt
+      ansible.builtin.blockinfile:
+        path: "{{ user_home }}/.bashrc"
+        marker: "# {mark} ANSIBLE MANAGED - prompt"
+        block: |
+          if [ -f "$HOME/.bash_prompt" ]; then
+            . "$HOME/.bash_prompt"
+          fi
+        create: yes
+        mode: "0640"
+        owner: "{{ user_name }}"
+        group: "{{ user_name }}"
+
+    #####################################################################
+    # 4. Bash customizations via ~/.bashrc.local + include
+    #####################################################################
+    - name: Deploy .bashrc.local from dotfiles
+      ansible.builtin.file:
+        src: "{{ dotfiles_dir }}/bash/bashrc.local"
+        dest: "{{ user_home }}/.bashrc.local"
+        state: link
+        force: yes
+
+    - name: Ensure .bashrc sources .bashrc.local
+      ansible.builtin.blockinfile:
+        path: "{{ user_home }}/.bashrc"
+        marker: "# {mark} ANSIBLE MANAGED - bashrc.local"
+        block: |
+          if [ -f "$HOME/.bashrc.local" ]; then
+            . "$HOME/.bashrc.local"
+          fi
+        create: yes
+        mode: "0640"
+        owner: "{{ user_name }}"
+        group: "{{ user_name }}"
+
+    #####################################################################
+    # 5. tmux install + customization
+    #####################################################################
+    # Main tmux config may be distro-provided; just ensure it sources our local file.
+
+    - name: Deploy tmux local config
+      ansible.builtin.file:
+        src: "{{ dotfiles_dir }}/tmux/tmux.conf.local"
+        dest: "{{ user_home }}/.tmux.conf.local"
+        state: link
+        force: yes
+
+    - name: Ensure ~/.tmux.conf exists
+      ansible.builtin.file:
+        path: "{{ user_home }}/.tmux.conf"
+        state: touch
+        mode: "0640"
+        owner: "{{ user_name }}"
+        group: "{{ user_name }}"
+
+    - name: Ensure ~/.tmux.conf sources .tmux.conf.local
+      ansible.builtin.blockinfile:
+        path: "{{ user_home }}/.tmux.conf"
+        marker: "# {mark} ANSIBLE MANAGED - tmux local"
+        block: |
+          if-shell 'test -f ~/.tmux.conf.local' 'source-file ~/.tmux.conf.local'
+        insertafter: EOF
+        owner: "{{ user_name }}"
+        group: "{{ user_name }}"
+        mode: "0640"
+
+    #####################################################################
+    # 6. screen install + customization
+    #####################################################################
+    - name: Deploy screen local config
+      ansible.builtin.file:
+        src: "{{ dotfiles_dir }}/screen/screenrc.local"
+        dest: "{{ user_home }}/.screenrc.local"
+        state: link
+        force: yes
+
+    - name: Ensure ~/.screenrc exists
+      ansible.builtin.file:
+        path: "{{ user_home }}/.screenrc"
+        state: touch
+        mode: "0640"
+        owner: "{{ user_name }}"
+        group: "{{ user_name }}"
+
+    - name: Ensure ~/.screenrc includes .screenrc.local
+      ansible.builtin.blockinfile:
+        path: "{{ user_home }}/.screenrc"
+        marker: "# {mark} ANSIBLE MANAGED - screen local"
+        block: |
+          if [ -f "$HOME/.screenrc.local" ]; then
+            source "$HOME/.screenrc.local"
+          fi
+        insertafter: EOF
+        owner: "{{ user_name }}"
+        group: "{{ user_name }}"
+        mode: "0640"
+
+    #####################################################################
+    # 7. vim customization
+    #####################################################################
+    - name: Deploy vim local config
+      ansible.builtin.file:
+        src: "{{ dotfiles_dir }}/vim/vimrc.local"
+        dest: "{{ user_home }}/.vimrc.local"
+        state: link
+        force: yes
+
+    - name: Ensure ~/.vimrc exists
+      ansible.builtin.file:
+        path: "{{ user_home }}/.vimrc"
+        state: touch
+        mode: "0640"
+        owner: "{{ user_name }}"
+        group: "{{ user_name }}"
+
+    - name: Ensure ~/.vimrc sources .vimrc.local
+      ansible.builtin.blockinfile:
+        path: "{{ user_home }}/.vimrc"
+        marker: "\" {mark} ANSIBLE MANAGED - vim local"
+        block: |
+          if filereadable(expand("~/.vimrc.local"))
+            source ~/.vimrc.local
+          endif
+        insertafter: EOF
+        owner: "{{ user_name }}"
+        group: "{{ user_name }}"
+        mode: "0640"
