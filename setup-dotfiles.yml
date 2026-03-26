@@ -3,7 +3,7 @@
   hosts: localhost
   connection: local
   vars:
-    dotfiles_repo: "git@github.com:Twitch/nix-configs.git"
+    dotfiles_repo: "https://github.com/Twitch/nix-configs.git"
     dotfiles_version: "main"
     dotfiles_dir: "{{ ansible_env.HOME }}/.bsconfig/.dotfiles"
     user_home: "{{ ansible_env.HOME }}"
