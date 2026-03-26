@@ -1,0 +1,14 @@
+" Set tab spacing to 3 spaces
+set tabstop=3
+set shiftwidth=3
+set softtabstop=3
+set expandtab
+
+" Enable autoindent
+set autoindent
+
+" Set the colorscheme to darkblue
+colorscheme darkblue
+
+" Optional: Enable syntax highlighting
+syntax on
