@@ -73,7 +73,7 @@
       ansible.builtin.file:
         src: "{{ dotfiles_dir }}/bash/dircolors"
         dest: "{{ user_home }}/.dircolors"
-        state: link
+        state: copy
         force: yes
 
     #####################################################################
@@ -83,7 +83,7 @@
       ansible.builtin.file:
         src: "{{ dotfiles_dir }}/bash/prompt.sh"
         dest: "{{ user_home }}/.bash_prompt"
-        state: link
+        state: copy
         force: yes
 
     - name: Ensure .bashrc sources .bash_prompt
@@ -106,7 +106,7 @@
       ansible.builtin.file:
         src: "{{ dotfiles_dir }}/bash/bashrc.local"
         dest: "{{ user_home }}/.bashrc.local"
-        state: link
+        state: copy
         force: yes
 
     - name: Ensure .bashrc sources .bashrc.local
@@ -131,7 +131,7 @@
       ansible.builtin.file:
         src: "{{ dotfiles_dir }}/tmux/tmux.conf.local"
         dest: "{{ user_home }}/.tmux.conf.local"
-        state: link
+        state: copy
         force: yes
 
     - name: Ensure ~/.tmux.conf exists
@@ -190,7 +190,7 @@
 #      ansible.builtin.file:
 #        src: "{{ dotfiles_dir }}/screen/screenrc.local"
 #        dest: "{{ user_home }}/.screenrc.local"
-#        state: link
+#        state: copy
 #        force: yes
 #
 #    - name: Ensure ~/.screenrc exists
@@ -221,7 +221,7 @@
       ansible.builtin.file:
         src: "{{ dotfiles_dir }}/vim/vimrc.local"
         dest: "{{ user_home }}/.vimrc.local"
-        state: link
+        state: copy
         force: yes
 
     - name: Ensure ~/.vimrc exists
