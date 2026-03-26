@@ -29,33 +29,31 @@
     #####################################################################
     # Set global git configs
     #####################################################################
-      tasks:
-        - name: Ensure community.general collection is installed
-          ansible.builtin.command:
-            cmd: ansible-galaxy collection install community.general
-          register: galaxy_out
-          changed_when: '"Nothing to do." not in galaxy_out.stdout'
-        
-        - name: Set Git global user.name
-          community.general.git_config:
-            name: user.name
-            value: "{{ git_user_name }}"
-            scope: global
-          become: false
-
-        - name: Set Git global user.email
-          community.general.git_config:
-            name: user.email
-            value: "{{ git_user_email }}"
-            scope: global
-          become: false
-        
-        - name: Set Git default initial branch name
-          community.general.git_config:
-            name: init.defaultBranch
-            value: "{{ git_default_branch }}"
-            scope: global
-          become: false
+    - name: Ensure community.general collection is installed
+      ansible.builtin.command:
+        cmd: ansible-galaxy collection install community.general
+      register: galaxy_out
+      changed_when: '"Nothing to do." not in galaxy_out.stdout'
+    
+    - name: Set Git global user.name
+      community.general.git_config:
+        name: user.name
+        value: "{{ git_user_name }}"
+        scope: global
+      become: fals
+    - name: Set Git global user.email
+      community.general.git_config:
+        name: user.email
+        value: "{{ git_user_email }}"
+        scope: global
+      become: false
+    
+    - name: Set Git default initial branch name
+      community.general.git_config:
+        name: init.defaultBranch
+        value: "{{ git_default_branch }}"
+        scope: global
+      become: false
 
 
     #####################################################################
