@@ -39,11 +39,11 @@
           changed_when: '"Nothing to do." not in galaxy_out.stdout'
         
         - name: Set Git global user.name
-              community.general.git_config:
-                name: user.name
-                value: "{{ git_user_name }}"
-                scope: global
-              become: false
+          community.general.git_config:
+            name: user.name
+            value: "{{ git_user_name }}"
+            scope: global
+          become: false
 
         - name: Set Git global user.email
           community.general.git_config:
