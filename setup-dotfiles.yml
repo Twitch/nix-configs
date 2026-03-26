@@ -8,23 +8,60 @@
     dotfiles_dir: "{{ ansible_env.HOME }}/.bsconfig/.dotfiles"
     user_home: "{{ ansible_env.HOME }}"
     user_name: "{{ ansible_user_id | default(ansible_env.USER) }}"
+    git_user_name: "Ben"
+    git_user_email: "no@thx"
+    git_default_branch: "main"
 
   tasks:
     #####################################################################
-    # 0. Ensure required packages exist (tmux, screen, vim)
+    # Ensure required packages exist (tmux, screen, vim)
     #####################################################################
     - name: Ensure tmux, screen, vim are installed
       become: true
       ansible.builtin.package:
         name:
-          - tmux
-          - screen
-          - vim
           - git
+          - tmux
+          # - screen
+          - vim
         state: present
 
     #####################################################################
-    # 1. Clone/update dotfiles from GitHub
+    # Set global git configs
+    #####################################################################
+    - hosts: localhost
+      connection: local
+      tasks:
+        - name: Ensure community.general collection is installed
+          ansible.builtin.command:
+            cmd: ansible-galaxy collection install community.general
+          register: galaxy_out
+          changed_when: '"Nothing to do." not in galaxy_out.stdout'
+        
+        - name: Set Git global user.name
+              community.general.git_config:
+                name: user.name
+                value: "{{ git_user_name }}"
+                scope: global
+              become: false
+
+        - name: Set Git global user.email
+          community.general.git_config:
+            name: user.email
+            value: "{{ git_user_email }}"
+            scope: global
+          become: false
+        
+        - name: Set Git default initial branch name
+          community.general.git_config:
+            name: init.defaultBranch
+            value: "{{ git_default_branch }}"
+            scope: global
+          become: false
+
+
+    #####################################################################
+    # Clone/update dotfiles from GitHub
     #####################################################################
     - name: Clone dotfiles repo
       ansible.builtin.git:
@@ -34,7 +71,7 @@
         update: yes
 
     #####################################################################
-    # 2. dircolors customization (~/.dircolors)
+    # dircolors customization (~/.dircolors)
     #####################################################################
     - name: Deploy custom dircolors
       ansible.builtin.file:
@@ -44,7 +81,7 @@
         force: yes
 
     #####################################################################
-    # 3. Prompt customization (separate file, sourced from .bashrc)
+    # Prompt customization (separate file, sourced from .bashrc)
     #####################################################################
     - name: Deploy custom prompt script
       ansible.builtin.file:
@@ -67,7 +104,7 @@
         group: "{{ user_name }}"
 
     #####################################################################
-    # 4. Bash customizations via ~/.bashrc.local + include
+    # Bash customizations via ~/.bashrc.local + include
     #####################################################################
     - name: Deploy .bashrc.local from dotfiles
       ansible.builtin.file:
@@ -90,7 +127,7 @@
         group: "{{ user_name }}"
 
     #####################################################################
-    # 5. tmux install + customization
+    # tmux install + customization
     #####################################################################
     # Main tmux config may be distro-provided; just ensure it sources our local file.
 
@@ -120,39 +157,69 @@
         group: "{{ user_name }}"
         mode: "0640"
 
-    #####################################################################
-    # 6. screen install + customization
-    #####################################################################
-    - name: Deploy screen local config
+    ##########################
+    ## tmux plugin mgr goop ##
+    ##########################
+    - name: Ensure tmux plugins directory exists
       ansible.builtin.file:
-        src: "{{ dotfiles_dir }}/screen/screenrc.local"
-        dest: "{{ user_home }}/.screenrc.local"
-        state: link
+        path: "{{ user_home }}/.tmux/plugins"
+        state: directory
+        owner: "{{ user_name }}"
+        group: "{{ user_name }}"
+        mode: "0755"
+    
+    - name: Install or update TPM
+      ansible.builtin.git:
+        repo: "https://github.com/tmux-plugins/tpm.git"
+        dest: "{{ user_home }}/.tmux/plugins/tpm"
+        version: master
+        update: yes
         force: yes
+      become: false
 
-    - name: Ensure ~/.screenrc exists
-      ansible.builtin.file:
-        path: "{{ user_home }}/.screenrc"
-        state: touch
-        mode: "0640"
-        owner: "{{ user_name }}"
-        group: "{{ user_name }}"
-
-    - name: Ensure ~/.screenrc includes .screenrc.local
-      ansible.builtin.blockinfile:
-        path: "{{ user_home }}/.screenrc"
-        marker: "# {mark} ANSIBLE MANAGED - screen local"
-        block: |
-          if [ -f "$HOME/.screenrc.local" ]; then
-            source "$HOME/.screenrc.local"
-          fi
-        insertafter: EOF
-        owner: "{{ user_name }}"
-        group: "{{ user_name }}"
-        mode: "0640"
+    - name: Install tmux plugins via TPM (non-interactive)
+      ansible.builtin.command:
+        cmd: "{{ user_home }}/.tmux/plugins/tpm/bin/install_plugins"
+      environment:
+        TMUX_PLUGIN_MANAGER_PATH: "{{ user_home }}/.tmux/plugins"
+      become: false
+      changed_when: true   # TPM doesn't have a great idempotent output
 
     #####################################################################
-    # 7. vim customization
+    # screen install + customization
+    #####################################################################
+    # When I get back around to using screen again... I do this.
+#
+#    - name: Deploy screen local config
+#      ansible.builtin.file:
+#        src: "{{ dotfiles_dir }}/screen/screenrc.local"
+#        dest: "{{ user_home }}/.screenrc.local"
+#        state: link
+#        force: yes
+#
+#    - name: Ensure ~/.screenrc exists
+#      ansible.builtin.file:
+#        path: "{{ user_home }}/.screenrc"
+#        state: touch
+#        mode: "0640"
+#        owner: "{{ user_name }}"
+#        group: "{{ user_name }}"
+#
+#    - name: Ensure ~/.screenrc includes .screenrc.local
+#      ansible.builtin.blockinfile:
+#        path: "{{ user_home }}/.screenrc"
+#        marker: "# {mark} ANSIBLE MANAGED - screen local"
+#        block: |
+#          if [ -f "$HOME/.screenrc.local" ]; then
+#            source "$HOME/.screenrc.local"
+#          fi
+#        insertafter: EOF
+#        owner: "{{ user_name }}"
+#        group: "{{ user_name }}"
+#        mode: "0640"
+
+    #####################################################################
+    # vim customization
     #####################################################################
     - name: Deploy vim local config
       ansible.builtin.file:
