@@ -27,3 +27,10 @@ alias t='terraform'
 alias tf='terraform'
 alias awssso='aws configure sso'
 alias awscon='aws configure'
+
+
+# ssh-agent stuff for git goop
+if [ -z "$SSH_AUTH_SOCK" ]; then
+  eval "$(ssh-agent -s)" >/dev/null
+  ssh-add ~/.ssh/id_rsa 
+fi
