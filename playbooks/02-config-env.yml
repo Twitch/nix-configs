@@ -64,20 +64,18 @@
     # dircolors customization (~/.dircolors)
     #####################################################################
     - name: Deploy custom dircolors
-      ansible.builtin.file:
-        src: "{{ dotfiles_dir }}/bash/dircolors"
+      ansible.builtin.copy:
+        src: "{{ dotfiles_dir }}/dotfiles/bash/dircolors"
         dest: "{{ user_home }}/.dircolors"
-        state: copy
         force: yes
 
     #####################################################################
     # Prompt customization (separate file, sourced from .bashrc)
     #####################################################################
     - name: Deploy custom prompt script
-      ansible.builtin.file:
-        src: "{{ dotfiles_dir }}/bash/prompt.sh"
+      ansible.builtin.copy:
+        src: "{{ dotfiles_dir }}/dotfiles/bash/prompt.sh"
         dest: "{{ user_home }}/.bash_prompt"
-        state: copy
         force: yes
 
     - name: Ensure .bashrc sources .bash_prompt
@@ -97,10 +95,9 @@
     # Bash customizations via ~/.bashrc.local + include
     #####################################################################
     - name: Deploy .bashrc.local from dotfiles
-      ansible.builtin.file:
-        src: "{{ dotfiles_dir }}/bash/bashrc.local"
+      ansible.builtin.copy:
+        src: "{{ dotfiles_dir }}/dotfiles/bash/bashrc.local"
         dest: "{{ user_home }}/.bashrc.local"
-        state: copy
         force: yes
 
     - name: Ensure .bashrc sources .bashrc.local
@@ -122,10 +119,9 @@
     # Main tmux config may be distro-provided; just ensure it sources our local file.
 
     - name: Deploy tmux local config
-      ansible.builtin.file:
-        src: "{{ dotfiles_dir }}/tmux/tmux.conf.local"
+      ansible.builtin.copy:
+        src: "{{ dotfiles_dir }}/dotfiles/tmux/tmux.conf"
         dest: "{{ user_home }}/.tmux.conf.local"
-        state: copy
         force: yes
 
     - name: Ensure ~/.tmux.conf exists
@@ -179,10 +175,9 @@
     # vim customization
     #####################################################################
     - name: Deploy vim local config
-      ansible.builtin.file:
-        src: "{{ dotfiles_dir }}/vim/vimrc.local"
+      ansible.builtin.copy:
+        src: "{{ dotfiles_dir }}/dotfiles/vim/vimrc.local"
         dest: "{{ user_home }}/.vimrc.local"
-        state: copy
         force: yes
 
     - name: Ensure ~/.vimrc exists
@@ -212,10 +207,9 @@
     # When I get back around to using screen again... I do this.
 #
 #    - name: Deploy screen local config
-#      ansible.builtin.file:
+#      ansible.builtin.copy:
 #        src: "{{ dotfiles_dir }}/screen/screenrc.local"
 #        dest: "{{ user_home }}/.screenrc.local"
-#        state: copy
 #        force: yes
 #
 #    - name: Ensure ~/.screenrc exists
