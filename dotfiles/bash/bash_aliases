@@ -20,6 +20,10 @@ alias gporig='git push -u origin'
 alias gmain='git push -u origin main'
 alias gpush='git push'
 alias gcom='git commit -m'
+alias gb='git branch'
+__git_complete gb _git_branch
+alias gsw='git switch'
+__git_complete gsw _git_switch
 
 ## pydev
 alias py='python3'

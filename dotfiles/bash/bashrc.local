@@ -1,10 +1,14 @@
 
 
 # Colorizing the prompt within tmux
-## bcz gimme colours
+# bcuz gimme dem colours
 
 force_color_prompt=yes
 
+## Improve git completions within aliases... maybe.
+if [ -f "/usr/share/bash-completion/completions/git" ]; then
+   . "/usr/share/bash-completion/completions/git"
+fi
 
 # ssh-agent stuff for git goop
 if [ -z "$SSH_AUTH_SOCK" ]; then
