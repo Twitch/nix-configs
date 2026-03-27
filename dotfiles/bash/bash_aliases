@@ -12,6 +12,7 @@ alias tma='tmux attach'
 # My QoL aliases
 alias re='source ~/.bashrc'
 alias bashrc='vim ~/.bashrc'
+alias blocal='vim ~/.bashrc.local'
 alias shorts='vim ~/.bash_aliases'
 
 ## git stuff
