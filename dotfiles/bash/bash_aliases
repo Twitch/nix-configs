@@ -1,0 +1,34 @@
+########################################################
+##  Separating alias-specific bash customizer stuff   ##
+##  because, fuck, do I do a lot of that              ##
+########################################################
+
+# Default alias shizz
+alias ll='ls -hal'
+alias la='ls -A'
+alias l='ls -CF'
+alias tma='tmux attach'
+
+# My QoL aliases
+alias re='source ~/.bashrc'
+alias bashrc='vim ~/.bashrc'
+alias shorts='vim ~/.bash_aliases'
+
+## git stuff
+alias gporig='git push -u origin' 
+alias gmain='git push -u origin main'
+alias gpush='git push'
+alias gcom='git commit -m'
+
+## pydev
+alias py='python3'
+alias python='python3'
+alias act='source ./bin/activate'
+alias de='deactivate'
+alias pyenv='python -m venv .'
+
+## AWS dev
+alias t='terraform'
+alias tf='terraform'
+alias awssso='aws configure sso'
+alias awscon='aws configure'

@@ -113,6 +113,12 @@
         owner: "{{ user_name }}"
         group: "{{ user_name }}"
 
+    - name: Deploy .bash_aliases
+      ansible.builtin.copy:
+        src: "{{ dotfiles_dir }}/dotfiles/bash/bash_aliases"
+        dest: "{{ user_home }}/.bash_aliases"
+        force: yes
+
     #####################################################################
     # tmux install + customization
     #####################################################################
