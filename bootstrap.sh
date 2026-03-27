@@ -4,6 +4,8 @@ set -euo pipefail
 # Let's get local. Like... where this script lives.
 cd "$(dirname "$0")"
 
+export ANSIBLE_CONFIG="$PWD/ansible.cfg"
+
 # 1) Install collections (once)
 ansible-galaxy collection install -r collections/requirements.yml
 
