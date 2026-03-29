@@ -15,4 +15,5 @@
           - tmux
           # - screen
           - vim
+          - net-tools
         state: present
