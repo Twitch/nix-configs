@@ -5,10 +5,9 @@
 - name: Install base packages (w/ sudooooo)
   hosts: localhost
   connection: local
-  become: true
   
   tasks:
-    - name: Ensure tmux, screen, vim are installed
+    - name: Ensure tmux, screen, vim are installed (linux)
       ansible.builtin.package:
         name:
           - git
@@ -17,3 +16,17 @@
           - vim
           - net-tools
         state: present
+        become: true
+        when: ansible_system != "Darwin"
+
+    - name: Ensure tmux, screen, vim are installed (MaxOS)
+      ansible.builtin.package:
+        name:
+          - git
+          - tmux
+          # - screen
+          - vim
+          - net-tools
+        state: present
+        become: false
+        when: ansible_system == "Darwin"

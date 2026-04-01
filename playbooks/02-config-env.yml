@@ -89,7 +89,7 @@
         create: yes
         mode: "0640"
         owner: "{{ user_name }}"
-        group: "{{ user_name }}"
+
 
     #####################################################################
     # Bash customizations via ~/.bashrc.local + include
@@ -111,7 +111,6 @@
         create: yes
         mode: "0640"
         owner: "{{ user_name }}"
-        group: "{{ user_name }}"
 
     - name: Deploy .bash_aliases
       ansible.builtin.copy:
@@ -136,7 +135,7 @@
         state: touch
         mode: "0640"
         owner: "{{ user_name }}"
-        group: "{{ user_name }}"
+
 
     - name: Ensure ~/.tmux.conf sources .tmux.conf.local
       ansible.builtin.blockinfile:
@@ -146,7 +145,6 @@
           if-shell 'test -f ~/.tmux.conf.local' 'source-file ~/.tmux.conf.local'
         insertafter: EOF
         owner: "{{ user_name }}"
-        group: "{{ user_name }}"
         mode: "0640"
 
     ##########################
@@ -157,7 +155,6 @@
         path: "{{ user_home }}/.tmux/plugins"
         state: directory
         owner: "{{ user_name }}"
-        group: "{{ user_name }}"
         mode: "0755"
     
     - name: Install or update TPM
@@ -192,7 +189,6 @@
         state: touch
         mode: "0640"
         owner: "{{ user_name }}"
-        group: "{{ user_name }}"
 
     - name: Ensure ~/.vimrc sources .vimrc.local
       ansible.builtin.blockinfile:
@@ -204,7 +200,6 @@
           endif
         insertafter: EOF
         owner: "{{ user_name }}"
-        group: "{{ user_name }}"
         mode: "0640"
 
     #####################################################################
@@ -224,7 +219,6 @@
 #        state: touch
 #        mode: "0640"
 #        owner: "{{ user_name }}"
-#        group: "{{ user_name }}"
 #
 #    - name: Ensure ~/.screenrc includes .screenrc.local
 #      ansible.builtin.blockinfile:
@@ -236,5 +230,4 @@
 #          fi
 #        insertafter: EOF
 #        owner: "{{ user_name }}"
-#        group: "{{ user_name }}"
 #        mode: "0640"
